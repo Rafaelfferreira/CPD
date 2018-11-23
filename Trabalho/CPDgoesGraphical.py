@@ -249,15 +249,24 @@ def relevanciaArtistaAno(dados, indiceFile, ano, maxArtistas):
 
 '''
 
+welcomeMessage = "Bem-vindo ao Billboard 100! \n\nPara efetuar buscas: \n"
+welcomeMessage = welcomeMessage + "1. Selecione o tipo da busca\n2. Entre com a entrada descrita abaixo\n3. Clike no botão de busca"
+welcomeMessage = welcomeMessage + "\n\nEntradas:\n1. Os n artistas mais relevantes: digite a quantidade (número) de artistas que se deseja listar."
+welcomeMessage = welcomeMessage + "\n2. Os 10 artistas mais relevantes do ano: digite o ano (número) que se deseja procurar."
+
+
 # Popup de erro, recebe uma string (mensagem de erro) e exibe em uma nova janela esta mensagem
 def popupErro(msg):
     popup = Tk()
+    popup.resizable(width=False, height=False)
+    popup.iconbitmap('b_icon.ico')
     popup.wm_title("Erro!")
     label = ttk.Label(popup, text=msg)
     label.pack(side="top", fill="x", pady=10)
     B1 = ttk.Button(popup, text="Ok", command = popup.destroy)
     B1.pack()
     popup.mainloop()
+
 
 
 
@@ -304,13 +313,15 @@ def busca():
 window = Tk()
 
 # seta um título na janela
-window.title("CPD GOES GRAPHICAL")
+window.title("Billboard 100")
 # seta tamanho da janela
 window.geometry("254x500")
 # seta cor de fundo da janela
 window.configure(background="white")
 # bloqueia redimensionamento da janela
-#window.resizable(width=False, height=False)
+window.resizable(width=False, height=False)
+# define icone da janela
+window.iconbitmap('b_icon.ico')
 
 # logo da billboard
 billboardLogo = PhotoImage(file="billboard.gif")
@@ -344,7 +355,7 @@ Button(window, text="BUSCA", width=5, command=busca) .grid(row=3, column=0, padx
 # cria textbox de output (onde os resultados vão ser printados)
 output = Text (window, width=28, height=15, wrap=WORD, background="white")
 output.grid(row=4, column=0, columnspan=2, padx=4, pady=15, sticky=W)
-output.insert(END, "CPD GOES GRAPHICAL")
+output.insert(END, welcomeMessage)
 output.config(state=DISABLED)   # não permite mexer na text box (tem que habilitar para inserir texto mesmo com .insert())
 # scrollbar  para textbox:
 scrollb = Scrollbar(window, command=output.yview)

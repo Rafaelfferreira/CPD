@@ -58,7 +58,7 @@ with (open('topMusicas.bin', 'rb')) as openfile:
 QUERIES = [
 
     "Os n artistas mais relevantes",
-    "Os 10 artistas mais relevantes do ano"
+    "Os n artistas mais relevantes do ano"
 
 ]
 
@@ -103,8 +103,9 @@ def popupErro(msg):
 
 # função chamada quando o botão BUSCA é pressionado
 def busca():
-    string = input.get()   # pega o texto da caixa de texto para realizar a busca
+    string = input1.get()   # pega o texto da caixa de texto para realizar a busca
     option = selectDrop.get()   # pega o valor selecionado no combobox
+    reverse = varCheckButton.get()
 
 # Query dos n artistas mais relevantes escolhida:
     if option == QUERIES[0]:
@@ -115,22 +116,30 @@ def busca():
             popupErro("Você deve fornecer um número inteiro!")
             return
 
-        resultado = topArtistasQuery(topArtistas, n, False)
+        resultado = topArtistasQuery(topArtistas, n, reverse)
 
-# Query dos 10 artistas mais relevantes de determinado ano:
+# Query dos n artistas mais relevantes de determinado ano:
     elif option == QUERIES[1]:
 
         try:   # tenta converter a string de entrada para número inteiro
-            ano = int(string)
-
-            # testa se é um ano válido
-######################   IMPLEMENTAR   #########################################################################
+            n = int(string)
 
         except ValueError:   # se não der, popa uma mensagem de erro
             popupErro("Você deve fornecer um número inteiro!")
             return
 
-        resultado = relevanciaArtistaAno(database, indices, ano, 10, True)
+        # repete o mesmo processo para o input do ano
+        ano = input2.get()
+
+        try:   # tenta converter a string de entrada para número inteiro
+            ano = int(ano)
+
+        except ValueError:   # se não der, popa uma mensagem de erro
+            popupErro("Você deve fornecer um número inteiro!")
+            return
+
+
+        resultado = relevanciaArtistaAno(database, indices, ano, n, reverse)
 
 
 
@@ -140,13 +149,57 @@ def busca():
     output.insert(END, resultado)   # insere resultado
     output.config(state=DISABLED)   # desabilita edição da text box novamente
 
+
+
+# função chamada toda vez que a a seleção da combobox mudar
+# habilita/desabilita caixas de entrada e muda mensagem que pede input para cada caixa
+def comboboxChanged(event):
+
+    # pega qual busca foi selecionada
+    selection = selectDrop.get()
+
+    # query: "Os n artistas mais relevantes"
+    if selection == QUERIES[0]:
+
+        # só a primeira caixa habilitada (sempre, não precisa mudar)
+        input2.config(state=DISABLED)
+        input3.config(state=DISABLED)
+        input4.config(state=DISABLED)
+
+        # troca mensagens das labels de instrução de input
+        msgInput1.config(text='Número de artistas:')
+        msgInput2.config(text='')
+        msgInput3.config(text='')
+        msgInput4.config(text='')
+
+
+    # query: "Os n artistas mais relevantes do ano"
+    if selection == QUERIES[1]:
+
+        # primeira e segunda caixas habilitadas
+        input2.config(state=NORMAL)
+        input3.config(state=DISABLED)
+        input4.config(state=DISABLED)
+
+        # troca mensagens das labels de instrução de input
+        msgInput1.config(text='Número de artistas:')
+        msgInput2.config(text='Ano de interesse:')
+        msgInput3.config(text='')
+        msgInput4.config(text='')
+
+
+
+
+
+
+
 # main
 window = Tk()
 
 # seta um título na janela
 window.title("Billboard 100")
 # seta tamanho da janela
-window.geometry("254x500")
+window.geometry("505x530")
 # seta cor de fundo da janela
 window.configure(background="white")
 # bloqueia redimensionamento da janela
@@ -155,42 +208,95 @@ window.resizable(width=False, height=False)
 window.iconbitmap('b_icon.ico')
 
 # logo da billboard
-billboardLogo = PhotoImage(file="billboard.gif")
+billboardLogo = PhotoImage(file="Billboard_original_500.gif")
 # o columnspan do grid define que a imagem vai ocupar duas colunas
 Label (window, image=billboardLogo, bg="white") .grid(row=0, column=0, columnspan=2, sticky=W)
 
 # bg: backgroung | fg: cor da fonte do texto | font: none pra default, 12 pro tamanho, bold para negrito
-Label (window, text="Escolha o tipo de busca:", bg="white", fg="black", font="none 12 bold") .grid(row=1, column=0, sticky=W)
+Label (window, text="Escolha o tipo de busca:", bg="white", fg="black", font="none 12 bold") .grid(row=1, column=0, sticky=W, pady=(20,0))
 
 # combobox seletor de qual tipo de busca pretende-se fazer:
-selectDrop = ttk.Combobox(window, state="readonly", width=35)
-selectDrop.grid(row=2, column=0, columnspan=2, sticky=W, padx=4)
+selectDrop = ttk.Combobox(window, state="readonly", width=57)
+selectDrop.grid(row=2, column=0, columnspan=2, sticky=W, padx=4, pady=(0,10))
 # valores do combobox
 selectDrop['values']= (
     QUERIES[0],
-    QUERIES[1],
-    "query 3"
+    QUERIES[1]
 )
 # valor default
 selectDrop.current(newindex=0)
-
-
-# texto de busca (entrada)
-input = Entry(window, width=22, font="none 11", bg="white")
-# o padx no grid determina um espaçamento
-input.grid(row=3, column=0, sticky=W, padx=4)   # grid definido aqui embaixo para não bugar o método get()
+selectDrop.bind("<<ComboboxSelected>>", comboboxChanged)
 
 # botão de busca
-Button(window, text="BUSCA", width=5, command=busca) .grid(row=3, column=0, padx=200, sticky=W)
+Button(window, text="BUSCA", width=5, command=busca) .grid(row=2, column=0, columnspan=2, padx=(380,0), pady=(0,10), sticky=W)
+
+# botão de check para habilitar/desabilitar busca reversa
+varCheckButton = IntVar()
+checkButton = Checkbutton(window, text="Reversa", variable=varCheckButton, bg="white")
+checkButton.grid(row=2, column=0, columnspan=2, padx=(430,0), pady=(0,10), sticky=W)
+
+
+'''
+
+    Parte da GUI com as 4 entryboxes e 4 labels indicando qual deve ser o input
+
+'''
+
+
+# mensagem pedindo primeiro input
+msgInput1 = Label (window, text="Número de artistas:", bg="white", fg="black", font="none 10")
+msgInput1.grid(row=3, column=0, sticky=W, padx=4)
+# texto de entrada 1
+input1 = Entry(window, font="none 11", bg="white")
+# o padx no grid determina um espaçamento
+input1.grid(row=4, column=0, sticky=EW, padx=4)   # grid definido aqui embaixo para não bugar o método get()
+
+
+# mensagem pedindo segundo input
+msgInput2 = Label (window, text="", bg="white", fg="black", font="none 10")
+msgInput2.grid(row=3, column=1, sticky=W, padx=4)
+# texto de entrada 2
+input2 = Entry(window, font="none 11", bg="white")
+input2.grid(row=4, column=1, sticky=EW, padx=4)
+
+
+# mensagem pedindo terceiro input
+msgInput3 = Label (window, text="", bg="white", fg="black", font="none 10")
+msgInput3.grid(row=5, column=0, sticky=W, padx=4)
+# texto de entrada 3
+input3 = Entry(window, font="none 11", bg="white")
+input3.grid(row=6, column=0, sticky=EW, padx=4)
+
+
+# mensagem pedindo quarto input
+msgInput4 = Label (window, text="", bg="white", fg="black", font="none 10")
+msgInput4.grid(row=5, column=1, sticky=W, padx=4)
+# texto de entrada 3
+input4 = Entry(window, font="none 11", bg="white")
+input4.grid(row=6, column=1, sticky=EW, padx=4)
+
+# desabilita edição das caixas que não serão utilizadas
+input2.config(state=DISABLED)
+input3.config(state=DISABLED)
+input4.config(state=DISABLED)
+
+
+
+'''
+
+    Parte da GUI com a textbox de saída
+
+'''
+
 
 # cria textbox de output (onde os resultados vão ser printados)
-output = Text (window, width=28, height=15, wrap=WORD, background="white")
-output.grid(row=4, column=0, columnspan=2, padx=4, pady=15, sticky=W)
+output = Text (window, width=59, height=12, wrap=WORD)
+output.grid(row=7, column=0, columnspan=2, padx=4, pady=15, sticky=W)
 output.insert(END, welcomeMessage)
 output.config(state=DISABLED)   # não permite mexer na text box (tem que habilitar para inserir texto mesmo com .insert())
 # scrollbar  para textbox:
 scrollb = Scrollbar(window, command=output.yview)
-scrollb.grid(row=4, column=0, padx=235, ipady=97)   # sendo ipady o tamanho da scrollbar
+scrollb.grid(row=7, column=0, columnspan=2, padx=(480,0), pady=15, ipady=72)   # sendo ipady o tamanho da scrollbar
 output['yscrollcommand'] = scrollb.set
 
 

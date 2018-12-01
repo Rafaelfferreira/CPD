@@ -211,7 +211,8 @@ def relevanciaArtistaAno(dados, indiceFile, ano, maxArtistas, reversa):
             achou = 1
 
     if(achou == 0):
-        print("O ano inserido não conta na base de dados")
+        return "O ano inserido não consta na base de dados."
+
     else:
         artistasDict = {}
 
@@ -229,16 +230,50 @@ def relevanciaArtistaAno(dados, indiceFile, ano, maxArtistas, reversa):
         # a query será revertida caso o usuário peça
         dictSorted = sorted(artistasDict.items(), key=lambda kv: kv[1], reverse = not reversa)
 
-        return dictSorted[:maxArtistas]
+        # pega os maxArtistas apenas da lista
+        dictSorted = dictSorted[:maxArtistas]
+
+
+
+        # Formatação da string final para ser posta na caixa de output
+
+        # para concatenar na string de output como mais/menos relevantes
+        if reversa:
+            maisMenos = " menos "
+        else:
+            maisMenos = " mais "
+
+        stringFinal = "Artistas" + maisMenos +  "relevantes de " + str(ano) + "\n\n"
+        counter = 1
+
+        # transforma numa string para poder ser inserida no output da text box
+        for artista in dictSorted:
+            stringFinal = stringFinal + str(counter) + ". " + artista[0] + " \n   Pontuação: " + str(artista[1]) + "\n\n"
+            counter += 1
+
+        return stringFinal
+
 
 
 # Query que retorna os N artistas mais relevantes no geral
 def topArtistasQuery(topArtistas, n, reversa):   # sendo n o número máximo de artistas
 
     if reversa:
-        return topArtistas[:-(n+1):-1]   # retorna os n últimos elementos em ordem reversa
+        topArtistas = topArtistas[:-(n+1):-1]   # retorna os n últimos elementos em ordem reversa
 
-    return topArtistas[:n]
+    else:
+        topArtistas = topArtistas[:n]
+
+    # Formatação da string para output na tela
+    stringFinal = "Artistas mais relevantes\n\n"
+    counter = 1
+
+    for artista in topArtistas:
+        # counter serve para orientar posição do artista
+        stringFinal = stringFinal + str(counter) + ". " + artista[0] + " \n   Pontuação: " + str(artista[1]) + "\n\n"
+        counter += 1
+
+    return stringFinal
 
 
 #Retorna o artista mais popular e quantas semanas ele ficou na billboard

@@ -279,9 +279,9 @@ def adicionaReg(artista, titulo, ano, pontos, peak, semanas):
 
 '''
 
-welcomeMessage = "Bem-vindo ao Billboard 100!" + \
+welcomeMessage = "Bem-vindo ao Billboard 200!" + \
                  "\n\nPara continuar, selecione a query desejada e digite as entradas requisitadas.\n\n" + \
-                 "Projeto no GitHub: https://github.com/Rafaelfferreira/CPD\n\n" + \
+                 "Projeto no GitHub: https://github.com/Rafaelfferreira/CPD/tree/master/Trabalho\n\n" + \
                  "Devs: \nFelipe Colombelli: https://github.com/colombelli/\nRafael Ferreira: https://github.com/Rafaelfferreira/\n\n" + \
                  "Testers: \nVítor Matias: https://github.com/VitorCMatias"
 
@@ -411,7 +411,10 @@ def helpMenu():
     help.wm_title("Help")
     help.configure(background='white')
 
-    texto = "Este programa foi feito com o intuito de... \nPara usar... Você pode... Quem fez... etc"
+    texto = "Este programa foi feito com o intuito de extrair informações sobre a relevância de artistas e músicas através do tempo baseado nos dados de popularidade disponibilizados semanalmente pela Billboard  + \
+    \nPara usar você precisa primeiro selecionar o tipo de busca que você deseja fazer, passar os paramêtros necessários para a busca (e os opcionais caso queira), determinar se quer que as informações sejam exibidas com sua ordem revertida + \
+    e então clicar no botão de busca. O resultado da sua busca será exibido na textbox abaixo. + \
+    \nEsse programa foi desenvolvido como projeto final para a cadeira de Classificação e Pesquisa de Dados da Universidade Federal do Rio Grande do Sul no semestre 2018/2 por Rafael Ferreira e Felipe Colombelli e testado por Vitor Matias."
 
     label = Label(help, text=texto, bg="white") .grid(row=0, column=0, padx=10, pady=10)
 
@@ -565,22 +568,28 @@ def busca():
     elif option == QUERIES[5]:
         try:   # tenta converter o input de máximo de sugestões para int
             n = int(input2.get())
+            if(n < 1): #Se o numero inserido for 0 ou menos nao retorna nada
+                resultado = outputSugestoesLista(["Você deve inserir um valor válido na quantidade de itens a ser retornado."])
         except ValueError:   # se não der, popa uma mensagem de erro
             popupErro("Você deve fornecer um número inteiro!")
-            return
 
-        resultado = "Sugestão de artistas:\n" + \
-            outputSugestoesLista(findString(1, database, trieArtistas, string, n)[1])
+        if(n > 0): #Se o numero inserido de retornos for um numero valido
+            resultado = "Sugestão de artistas:\n" + \
+                outputSugestoesLista(findString(1, database, trieArtistas, string, n)[1])
 
 # Query que sugere músicas dado uma substring/tentativa de busca de música
     elif option == QUERIES[6]:
         try:   # tenta converter o input de máximo de sugestões para int
             n = int(input2.get())
+            if(n < 1): #Se o numero inserido for 0 ou menos nao retorna nada
+                resultado = outputSugestoesLista(["Você deve inserir um valor válido na quantidade de itens a ser retornado."])
         except ValueError:   # se não der, popa uma mensagem de erro
             popupErro("Você deve fornecer um número inteiro!")
             return
-        resultado = "Sugestão de músicas:\n" + \
-            outputSugestoesLista(findString(0, database, trieMusicas, string, n)[1])
+
+        if(n > 0): #Se o numero inserido for 0 ou menos nao retorna nada
+            resultado = "Sugestão de músicas:\n" + \
+                outputSugestoesLista(findString(0, database, trieMusicas, string, n)[1])
 
 
 

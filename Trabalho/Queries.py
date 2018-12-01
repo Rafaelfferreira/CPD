@@ -59,6 +59,9 @@ def relevancia(trieArtistas, topMusicas, indices, dados, top, ano=None, artista=
 
     outputList = []
 
+    if(top < 1):
+    	return "Você deve inserir um valor válido na quantidade de itens a ser retornado."
+
     #Retornando de um determinado ano
     if(ano != None and artista == None):
         #Consultando do arquivo de indices qual o index inicial do ano que o usuario entrou
@@ -147,6 +150,9 @@ def relevancia(trieArtistas, topMusicas, indices, dados, top, ano=None, artista=
 def relevanciaReversa(trieArtistas, topMusicas, indices, dados, top, ano=None, artista=None):
 
     outputList = []
+
+    if(top < 1):
+        return "Você deve inserir um valor válido na quantidade de itens a ser retornado."
 
     #Retornando de um determinado ano
     if(ano != None and artista == None):
@@ -245,6 +251,9 @@ def retiraFeaturing(artistaString):
 
 # Query que retorna os N artistas mais relevantes de determinado ano
 def relevanciaArtistaAno(dados, indiceFile, ano, maxArtistas, reversa):
+    if(maxArtistas < 1):
+        return "Você deve inserir um valor válido na quantidade de itens a ser retornado."
+
     achou = 0 #muda para 1 se o ano de entrada estiver no database
     # Loop que pega o ano passado para procurar no arquivo principal o artista mais relevante
     for entrada in range(len(indiceFile)):
@@ -301,6 +310,9 @@ def relevanciaArtistaAno(dados, indiceFile, ano, maxArtistas, reversa):
 
 # Query que retorna os N artistas mais relevantes no geral
 def topArtistasQuery(topArtistas, n, reversa):   # sendo n o número máximo de artistas
+    
+    if(n < 1):
+        return "Você deve inserir um valor válido na quantidade de itens a ser retornado."
 
     if reversa:
         topArtistas = topArtistas[:-(n+1):-1]   # retorna os n últimos elementos em ordem reversa

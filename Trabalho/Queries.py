@@ -397,13 +397,26 @@ def comparaRelevMusica(trieMusicas, trieArtistas, database, musica1, artista1, m
 
     artista1 = findString(1, database, trieArtistas, artista1)
     artista2 = findString(1, database, trieArtistas, artista2)
-
+    
+    achouArtista1 = 0 #flags que servem para garantir que os 2 artistas inseridos pelo usuario estejam no banco de dados
+    achouArtista2 = 0
+    
     if artista1[0]:   # se o artista passado se encontra na trie
+        achouArtista1 = 1
         artista1 = database[artista1[1][0]]['Artista']   # pega o nome do jeito que tá na base de dados
 
     # repete o mesmo processo para o artista 2
     if artista2[0]:
+        achouArtista2 = 1
         artista2 = database[artista2[1][0]]['Artista']
+        
+        
+    if(achouArtista1 == 0 and achouArtista2 == 0):
+        return None
+    elif(achouArtista1 == 0):
+        musica1Inds = (False,False) #como python nao permite alterar o valor de uma tupla temos que criar uma tupla nova e substituir na variavel
+    else:
+        musica2Inds = (False,False)
 
     achou = 0 #se for 0 retorna que nao encontrou
 

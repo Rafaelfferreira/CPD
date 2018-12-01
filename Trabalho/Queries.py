@@ -310,7 +310,7 @@ def relevanciaArtistaAno(dados, indiceFile, ano, maxArtistas, reversa):
 
 # Query que retorna os N artistas mais relevantes no geral
 def topArtistasQuery(topArtistas, n, reversa):   # sendo n o número máximo de artistas
-    
+
     if(n < 1):
         return "Você deve inserir um valor válido na quantidade de itens a ser retornado."
 
@@ -391,9 +391,19 @@ def comparaRelevArtista(trieArtistas, database, artista1, artista2):
 
 
 #Retorna a musica mais popular e quantas semanas ele ficou na billboard
-def comparaRelevMusica(trieMusicas, database, musica1, artista1, musica2, artista2):
-    musica1Inds = findString(1, database, trieMusicas, musica1) #retorna os indices do arquivo principal com registros da musica
-    musica2Inds = findString(1, database, trieMusicas, musica2) #retorna os indices do arquivo principal com registros da musica
+def comparaRelevMusica(trieMusicas, trieArtistas, database, musica1, artista1, musica2, artista2):
+    musica1Inds = findString(0, database, trieMusicas, musica1) #retorna os indices do arquivo principal com registros da musica
+    musica2Inds = findString(0, database, trieMusicas, musica2) #retorna os indices do arquivo principal com registros da musica
+
+    artista1 = findString(1, database, trieArtistas, artista1)
+    artista2 = findString(1, database, trieArtistas, artista2)
+
+    if artista1[0]:   # se o artista passado se encontra na trie
+        artista1 = database[artista1[1][0]]['Artista']   # pega o nome do jeito que tá na base de dados
+
+    # repete o mesmo processo para o artista 2
+    if artista2[0]:
+        artista2 = database[artista2[1][0]]['Artista']
 
     achou = 0 #se for 0 retorna que nao encontrou
 

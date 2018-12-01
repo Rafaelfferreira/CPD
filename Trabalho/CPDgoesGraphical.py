@@ -551,7 +551,7 @@ def busca():
         musica2 = input3.get()
         artista2 = input4.get()
 
-        outputQuery4 = comparaRelevMusica(trieMusicas, database, musica1, artista1, musica2, artista2)
+        outputQuery4 = comparaRelevMusica(trieMusicas, trieArtistas, database, musica1, artista1, musica2, artista2)
 
         # testa se retornou algum artista na string de retorno
         if outputQuery4 == None:

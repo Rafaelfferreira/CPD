@@ -1,3 +1,7 @@
+import copy
+from unicodedata import normalize
+
+
 '''''''''''''''
 
  Criando as funções necessárias para acessar as árvores TRIE
@@ -16,7 +20,7 @@ class TrieNode(object):
 
 
 #Definindo função que localiza uma string na arvore
-def findString(select, dados, raiz, palavra: str) -> (bool, []):
+def findString(select, dados, raiz, palavra: str, maxSugestoes=15) -> (bool, []):
     """
       1. Se a palavra existe e tem algum índice associado, retorna verdadeiro e a lista de índices dela
       2. Se a palavra não existe, retorna falso e uma lista com sugestões de palavras
@@ -39,14 +43,15 @@ def findString(select, dados, raiz, palavra: str) -> (bool, []):
                 break
 
         if charNaoEncontrado:   # chama a função que procura sugestões e retorna a tupla (False, lista de sugestões)
-            return False, sugereStrings(select, dados, nodo, stringSugerida, 15)
+            return False, sugereStrings(select, dados, nodo, stringSugerida, maxSugestoes)
 
     # Caso passe por todos os caracteres sem retornar false, então significa que a palavra foi encontrada
     # Resta saber se aquele nodo é um nodo final com um índice associado
     if nodo.pFinalizada:
         return True, nodo.indices
     else:
-        return False, sugereStrings(select, dados, nodo, stringSugerida, 15)
+        return False, sugereStrings(select, dados, nodo, stringSugerida, maxSugestoes)
+
 
 # Função que formata string desconsiderando maiúsculas e minúsculas e que remove acentos
 def formataString(string):
@@ -63,9 +68,9 @@ def sugereStrings(select, dados, nodo, string, maxSugestoes):   # onde select ig
         for indice in itera:
             listaDeSugestoes.remove(indice)   # remove o índice
             if select:
-                listaDeSugestoes.append(dados[indice]['Artista'])
+                listaDeSugestoes.append(str(dados[indice]['Artista']))
             else:
-                listaDeSugestoes.append(dados[indice]['Titulo'])
+                listaDeSugestoes.append(str(dados[indice]['Titulo']))
 
 
         listaDeSugestoes = sorted(listaDeSugestoes)   # ordena a lista alfabeticamente

@@ -1,11 +1,49 @@
-import pandas as pd
-import xlrd
-import pickle #modulo usado para serializar dados para o arquivo binario
-import os
-import time
+import pickle
 import copy
 from unicodedata import normalize
+from TRIE import *
 
+
+
+# função que recebe a lista de sugestão e retorna uma string com todos os elementos separados por vírgula
+def outputSugestoesLista(lista):
+
+    stringOut = ""
+
+    for elemento in lista:
+        stringOut = stringOut + "\n" + str(elemento)
+
+    return stringOut
+
+
+# função que returna string com mensagem de artista não encontrado e lista sugestões
+def sugestoesArtistas(listaArtistas):
+
+    stringOut = 'Artista não encontrado\nSugestões de artistas:\n' + outputSugestoesLista(listaArtistas)
+
+    return stringOut
+
+
+# função que formata a saída das queries de relevancia e relevancia inversa
+def arrumaStringRelevancia(listaDicios):
+
+    stringOut = "Músicas mais relevantes:\n\n"
+
+    # se o retorno é um único valor, transforma esse valor em lista para não bugar a iteração for
+    if type(listaDicios) != list:
+        listaDicios = [listaDicios]
+
+
+    counter = 1
+    # transforma numa string para poder ser inserida no output da text box
+    for musica in listaDicios:
+        stringOut = stringOut + str(counter) + ". " +       \
+            musica['Artista'] + " - " + musica['Titulo'] + "\n   Ano: " + str(musica['Ano']) +      \
+            "   Pontuação: " + str(musica['Pontos']) + "\n\n"
+        counter += 1
+
+
+    return stringOut
 
 
 
@@ -17,7 +55,10 @@ Definição das Querys
 
 # Query que retorna um numero N de pesquisas em ordem de relevancia, filtrando por artista/ano opcionalmente
 
-def relevancia(dados, top, ano=None, artista=None):
+def relevancia(trieArtistas, topMusicas, indices, dados, top, ano=None, artista=None):
+
+    outputList = []
+
     #Retornando de um determinado ano
     if(ano != None and artista == None):
         #Consultando do arquivo de indices qual o index inicial do ano que o usuario entrou
@@ -27,17 +68,16 @@ def relevancia(dados, top, ano=None, artista=None):
                 comeco = x['Min']
         if(comeco != -1):
             for i in range(comeco, comeco+top):
-                print(dados[i])
+                outputList.append(dados[i])
+            return arrumaStringRelevancia(outputList)
         else:
-            print('O ano pesquisado não esta na base de dados')
+            return "O ano inserido não consta na base de dados."
 
     #Retornando de um determinado artista
     if(artista != None and ano == None):
         indicesArtista = findString(1, dados, trieArtistas, artista)[1] #retorna os indices do arquivo principal com registros do artista
         if(type(indicesArtista[0]) == str):
-            print('Artista não encontrado')
-            print('Sugestões de artistas:')
-            print(indicesArtista)
+            return sugestoesArtistas(indicesArtista)
         else:
             listaMusicas2 = []
             for i in indicesArtista:
@@ -57,21 +97,21 @@ def relevancia(dados, top, ano=None, artista=None):
                 top = len(listaMusicas)
 
             for i in range(top):
-                print(listaMusicas[i])
+                outputList.append(listaMusicas[i])
+            return arrumaStringRelevancia(outputList)
 
     #Retorna o top geral
     if(ano == None and artista == None):
         for i in range(top):
-            print(dados[topMusicas[i][0]])
+            outputList.append(dados[topMusicas[i][0]])
+        return arrumaStringRelevancia(outputList)
 
     #Retorna o top dos artistas em determinado ano
     if(artista != None and ano != None):
         #Faz o mesmo procedimento que a busca por artista
         indicesArtista = findString(1, dados, trieArtistas, artista)[1] #retorna os indices do arquivo principal com registros do artista
         if(type(indicesArtista[0]) == str):
-            print('Artista não encontrado')
-            print('Sugestões de artistas:')
-            print(indicesArtista)
+            return sugestoesArtistas(indicesArtista)
         else:
             listaMusicas2 = []
             for i in indicesArtista:
@@ -97,13 +137,17 @@ def relevancia(dados, top, ano=None, artista=None):
                 top = len(listaMusicasAno)
             if(len(listaMusicasAno) > 0):
                 for i in range(top):
-                    print(listaMusicasAno[i])
+                    outputList.append(listaMusicasAno[i])
+                    return arrumaStringRelevancia(outputList)
             else:
-                print("Esse artista não teve nenhuma música no top 200 da billboard nesse ano")
+                return "O artista não teve nenhuma música no top 200 da Billboard para este ano."
 
 
 
-def relevanciaReversa(dados, top, ano=None, artista=None):
+def relevanciaReversa(trieArtistas, topMusicas, indices, dados, top, ano=None, artista=None):
+
+    outputList = []
+
     #Retornando de um determinado ano
     if(ano != None and artista == None):
         #Consultando do arquivo de indices qual o index inicial do ano que o usuario entrou
@@ -113,17 +157,16 @@ def relevanciaReversa(dados, top, ano=None, artista=None):
                 comeco = x['Max']
         if(comeco != -1):
             for i in range(comeco, comeco-top, -1): #(start,stop,step)
-                print(dados[i])
+                outputList.append(dados[i])
+            return arrumaStringRelevancia(outputList)
         else:
-            print('O ano pesquisado não esta na base de dados')
+            return "O ano inserido não consta na base de dados."
 
     #Retornando de um determinado artista
     if(artista != None and ano == None):
         indicesArtista = findString(1, dados, trieArtistas, artista)[1] #retorna os indices do arquivo principal com registros do artista
         if(type(indicesArtista[0]) == str):
-            print('Artista não encontrado')
-            print('Sugestões de artistas:')
-            print(indicesArtista)
+            return sugestoesArtistas(indicesArtista)
         else:
             listaMusicas2 = []
             for i in indicesArtista:
@@ -143,21 +186,21 @@ def relevanciaReversa(dados, top, ano=None, artista=None):
                 top = len(listaMusicas)
 
             for i in range(top):
-                print(listaMusicas[i])
+                outputList.append(listaMusicas[i])
+            return arrumaStringRelevancia(outputList)
 
     #Retorna o top geral
     if(ano == None and artista == None):
         for i in range(len(topMusicas)-1,len(topMusicas) - 1 - top,-1):
-            print(dados[topMusicas[i][0]])
+            outputList.append(dados[topMusicas[i][0]])
+        return arrumaStringRelevancia(outputList)
 
     #Retorna o top dos artistas em determinado ano
     if(artista != None and ano != None):
         #Faz o mesmo procedimento que a busca por artista
         indicesArtista = findString(1, dados, trieArtistas, artista)[1] #retorna os indices do arquivo principal com registros do artista
         if(type(indicesArtista[0]) == str):
-            print('Artista não encontrado')
-            print('Sugestões de artistas:')
-            print(indicesArtista)
+            return sugestoesArtistas(indicesArtista)
         else:
             listaMusicas2 = []
             for i in indicesArtista:
@@ -183,9 +226,10 @@ def relevanciaReversa(dados, top, ano=None, artista=None):
                 top = len(listaMusicasAno)
             if(len(listaMusicasAno) > 0):
                 for i in range(top):
-                    print(listaMusicasAno[i])
+                    outputList.append(listaMusicasAno[i])
+                return arrumaStringRelevancia(outputList)
             else:
-                print("Esse artista não teve nenhuma música no top 200 da billboard nesse ano")
+                return "O artista não teve nenhuma música no top 200 da Billboard neste ano."
 
 
 # Função utilizada para retirar a substring de Featuring com outro artista (caso tenha)
@@ -277,16 +321,27 @@ def topArtistasQuery(topArtistas, n, reversa):   # sendo n o número máximo de 
 
 
 #Retorna o artista mais popular e quantas semanas ele ficou na billboard
-def comparaRelevArtista(artista1, artista2):
+def comparaRelevArtista(trieArtistas, database, artista1, artista2):
     indicesArtista1 = findString(1, database, trieArtistas, artista1) #retorna os indices do arquivo principal com registros do artista
     indicesArtista2 = findString(1, database, trieArtistas, artista2) #retorna os indices do arquivo principal com registros do artista
+
+    # tenta pegar strings formatadas dos artistas
+    try:
+        artista1 = retiraFeaturing(str(database[indicesArtista1[1][0]]['Artista']))
+    except:
+        pass
+
+    try:
+        artista2 = retiraFeaturing(str(database[indicesArtista2[1][0]]['Artista']))
+    except:
+        pass
 
     #variaveis com o numero de semanas que cada artista ficou na hot 100
     semanas1 = 0
     semanas2 = 0
 
     if (indicesArtista1[0] == False and indicesArtista2[0] == False): #testa se as duas entradas sao invalidas
-        return None
+        return "Nenhum artista foi encontrado.\nTente usar a opção de sugestão de artistas para receber sugestão de artistas que constam na base de dados."
 
     elif (indicesArtista1[0] == False or indicesArtista2[0] == False): #testa se achou os 2 artistas
         if indicesArtista1[0] == False: #se nao achou o primeiro devolve o segundo
@@ -324,7 +379,7 @@ def comparaRelevArtista(artista1, artista2):
 
 
 #Retorna a musica mais popular e quantas semanas ele ficou na billboard
-def comparaRelevMusica(musica1, artista1, musica2, artista2):
+def comparaRelevMusica(trieMusicas, database, musica1, artista1, musica2, artista2):
     musica1Inds = findString(1, database, trieMusicas, musica1) #retorna os indices do arquivo principal com registros da musica
     musica2Inds = findString(1, database, trieMusicas, musica2) #retorna os indices do arquivo principal com registros da musica
 
@@ -341,12 +396,12 @@ def comparaRelevMusica(musica1, artista1, musica2, artista2):
             for x in musica2Inds[1]:
                 if (database[x]['Artista'] == artista2):
                     achou = 1
-                    return(musica2, database[x]['Semanas'])
+                    return(database[x]['Titulo'], database[x]['Semanas'])
         else: #se nao achou o segundo devolve o primeiro
             for x in musica1Inds[1]:
                 if (database[x]['Artista'] == artista1):
                     achou = 1
-                    return(musica1, database[x]['Semanas'])
+                    return(database[x]['Titulo'], database[x]['Semanas'])
 
     #as 2 musicas sao validas
     else:
@@ -362,11 +417,31 @@ def comparaRelevMusica(musica1, artista1, musica2, artista2):
                     indice2 = x
 
         if(semanas1 > semanas2):
-            return(musica1, semanas1)
+            return(database[musica1Inds[1][0]]['Titulo'], semanas1)
         elif(semanas2 > semanas1):
-            return(musica2, semanas2)
+            return(database[musica2Inds[1][0]]['Titulo'], semanas2)
         else: #mesmo numero de semanas
             if(database[indice1]['Pontos'] > database[indice2]['Pontos']):
-                return(musica1, semanas1)
+                return(database[musica1Inds[1][0]]['Titulo'], semanas1)
             else:
-                return(musica2, semanas2)
+                return(database[musica2Inds[1][0]]['Titulo'], semanas2)
+
+
+
+# Query que dado um artista, lista as músicas deste artista ou retorna uma sugestão de artistas caso o passado não for encontrados
+def listaMusicasArtista(database, trieArtistas, artista):
+
+    # procura artista na trie de artistaString
+    indicesArtista = findString(1, database, trieArtistas, artista)
+
+    if not indicesArtista[0]:   # se não encontrar o artista, retorna as sugestões de artistas
+        return "Artista não encontrado. Sugestões:\n" + outputSugestoesLista(indicesArtista[1])
+
+    musicas = []   # lista que vai gravar as músicas daquele dado artista
+
+    for indice in indicesArtista[1]:
+        musica = database[indice]['Titulo'] + " - Ano: " + str(database[indice]['Ano'])
+        if not(musica in musicas):   # se a musica já não constar na lista de músicas, insere na lista
+            musicas.append(musica)
+
+    return "Músicas:\n" + outputSugestoesLista(musicas)

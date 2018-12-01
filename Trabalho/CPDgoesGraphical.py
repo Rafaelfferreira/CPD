@@ -758,7 +758,7 @@ window = Tk()
 
 # definição do tamanho da janela
 width_window = 505
-height_window = 530
+height_window = 557
 
 # pega tamanho da tela do usuário
 screenW = window.winfo_screenwidth()

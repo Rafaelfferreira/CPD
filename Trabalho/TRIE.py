@@ -19,6 +19,27 @@ class TrieNode(object):
         ### não é um índice único e sim uma lista, pois podem existir títulos de música repetidos com mais de um artista
 
 
+#Definicao da funcao que adiciona uma string na arvore TRIE
+def addString(raiz, palavra: str, indice: int):   # função usada para adicionar uma palavra nova à estrutura trie 
+    palavra = formataString(palavra)   # formata string de entrada para o padrão (todas as letras maiúsculas sem acento)
+    nodo = raiz
+    for char in palavra:
+        encontradoEmFilho = False
+        # busca pelo caractere nos filhos do nodo atual
+        for filho in nodo.filhos:
+            if filho.char == char: 
+                nodo = filho   # apontamos o nodo para o filho que contém esse char
+                encontradoEmFilho = True
+                break
+        
+        if not encontradoEmFilho:   # se o caractere não foi encontrado, adiciona novo filho
+            novoNodo = TrieNode(char)
+            nodo.filhos.append(novoNodo)
+            nodo = novoNodo   # apontamos, então, o nodo para seu novo filho e continuamos a iteração
+    
+    nodo.pFinalizada = True   # indica que até ali pode ser uma palavra (nome de música/artista completo)
+    nodo.indices.append(indice)   # assinala o indice passado
+
 #Definindo função que localiza uma string na arvore
 def findString(select, dados, raiz, palavra: str, maxSugestoes=15) -> (bool, []):
     """

@@ -279,7 +279,7 @@ def adicionaReg(artista, titulo, ano, pontos, peak, semanas):
 
 '''
 
-welcomeMessage = "Bem-vindo ao Billboard 200!" + \
+welcomeMessage = "Bem-vindo ao Billboard 100!" + \
                  "\n\nPara continuar, selecione a query desejada e digite as entradas requisitadas.\n\n" + \
                  "Projeto no GitHub: https://github.com/Rafaelfferreira/CPD/tree/master/Trabalho\n\n" + \
                  "Devs: \nFelipe Colombelli: https://github.com/colombelli/\nRafael Ferreira: https://github.com/Rafaelfferreira/\n\n" + \
@@ -393,8 +393,8 @@ def helpMenu():
     help = Tk()
 
     # definição do tamanho da janela
-    width_window = 300
-    height_window = 300
+    width_window = 305
+    height_window = 335
 
     # pega tamanho da tela do usuário
     screenW = window.winfo_screenwidth()
@@ -407,17 +407,20 @@ def helpMenu():
     # seta tamanho da janela e posição na tela
     help.geometry("%dx%d+%d+%d" % (width_window, height_window, xpos, ypos))
     help.resizable(width=False, height=False)   # desbilita ajuste de tamanho da janela
-    help.iconbitmap('b_icon.ico')
+    help.iconbitmap('images/b_icon.ico')
     help.wm_title("Help")
     help.configure(background='white')
 
-    texto = "Este programa foi feito com o intuito de extrair informações sobre a relevância de artistas e músicas através do tempo baseado nos dados de popularidade disponibilizados semanalmente pela Billboard  + \
-    \nPara usar você precisa primeiro selecionar o tipo de busca que você deseja fazer, passar os paramêtros necessários para a busca (e os opcionais caso queira), determinar se quer que as informações sejam exibidas com sua ordem revertida + \
-    e então clicar no botão de busca. O resultado da sua busca será exibido na textbox abaixo. + \
-    \nEsse programa foi desenvolvido como projeto final para a cadeira de Classificação e Pesquisa de Dados da Universidade Federal do Rio Grande do Sul no semestre 2018/2 por Rafael Ferreira e Felipe Colombelli e testado por Vitor Matias."
+    texto = "   Este programa foi feito com o intuito de extrair informações sobre a relevância de artistas e músicas através do tempo baseado nos dados de popularidade disponibilizados semanalmente pela Billboard."  + \
+    "\n\n  Para usar você precisa primeiro selecionar o tipo de busca que você deseja fazer, passar os parâmetros necessários para a busca (e os opcionais caso queira), determinar se quer que as informações sejam exibidas com sua ordem revertida" + \
+    " e então clicar no botão de busca. O resultado da sua busca será exibido na textbox abaixo." + \
+    "\n\n  Esse programa foi desenvolvido como projeto final para a cadeira de Classificação e Pesquisa de Dados da Universidade Federal do Rio Grande do Sul no semestre 2018/2 por Rafael Ferreira e Felipe Colombelli e testado por Vitor Matias."
 
-    label = Label(help, text=texto, bg="white") .grid(row=0, column=0, padx=10, pady=10)
+    label = Label(help, text=texto, anchor="e", justify=LEFT, wraplength=300, bg="white")
+    label.grid(row=0, column=0, padx=5, pady=10)
 
+    b = Button(master=help, text="Fechar", command = help.destroy)
+    b.grid(row=1, column=0, columnspan=3, sticky=W, padx=(250,0))
 
     help.mainloop()
 
@@ -444,11 +447,11 @@ def popupErro(msg):
     # seta tamanho da janela e posição na tela
     popup.geometry("%dx%d+%d+%d" % (width_window, height_window, xpos, ypos))
     popup.resizable(width=False, height=False)   # desbilita ajuste de tamanho da janela
-    popup.iconbitmap('b_icon.ico')
+    popup.iconbitmap('images/b_icon.ico')
     popup.wm_title("Erro!")
     label = ttk.Label(popup, text=msg)
     label.pack(side="top", fill="x", pady=10)
-    B1 = ttk.Button(popup, text="Ok", command = popup.destroy)
+    B1 = Button(popup, text="Ok", command = popup.destroy)
     B1.pack()
     popup.mainloop()
 
@@ -777,7 +780,7 @@ window.configure(background="white")
 # bloqueia redimensionamento da janela
 window.resizable(width=False, height=False)
 # define icone da janela
-window.iconbitmap('b_icon.ico')
+window.iconbitmap('images/b_icon.ico')
 
 
 
@@ -810,7 +813,7 @@ subMenu.add_command(label="Exit", command=window.destroy)
 
 
 # logo da billboard
-billboardLogo = PhotoImage(file="Billboard_original_500.gif")
+billboardLogo = PhotoImage(file="images/Billboard_original_500.gif")
 # o columnspan do grid define que a imagem vai ocupar duas colunas
 Label (window, image=billboardLogo, bg="white") .grid(row=0, column=0, columnspan=2, sticky=W)
 

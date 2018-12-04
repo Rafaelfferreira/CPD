@@ -290,6 +290,7 @@ welcomeMessage = "Bem-vindo ao Billboard 100!" + \
 def insereNovosDados():
     window.fileName = filedialog.askopenfilename()
     adicionaAno(window.fileName)
+
     return
 
 
@@ -300,7 +301,7 @@ def insereNovoRegistro():
 
     # definição do tamanho da janela
     width_window = 345
-    height_window = 155
+    height_window = 162
 
     # pega tamanho da tela do usuário
     screenW = window.winfo_screenwidth()
@@ -313,7 +314,7 @@ def insereNovoRegistro():
     # seta tamanho da janela e posição na tela
     reg.geometry("%dx%d+%d+%d" % (width_window, height_window, xpos, ypos))
     reg.resizable(width=False, height=False)   # desbilita ajuste de tamanho da janela
-    reg.iconbitmap('b_icon.ico')
+    reg.iconbitmap('images/b_icon.ico')
     reg.wm_title("Inserção de Registro")
 
     """
@@ -362,7 +363,7 @@ def insereNovoRegistro():
 
 
     B1 = ttk.Button(reg, text="Inserir", command = lambda: pegaInputAdiciona(input1, input2, input3, input4, input5, input6, reg))
-    B1.grid(row=6, column=0, columnspan=2, sticky=EW, padx=4)
+    B1.grid(row=6, column=0, columnspan=2, sticky=EW, padx=4, pady=(5,0))
     reg.mainloop()
 
     return

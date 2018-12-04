@@ -88,7 +88,7 @@ def adicionaAno(arquivo):
     #Salva os registros do ano atual
     for i in range(len(df)):
         ano = df['WeekID'][0].split('-')
-        ano = ano[0]
+        ano = int(ano[0])
         if(df['SongID'][i] in contador): #testa se a musica ja esta no dicionario (ja foi computada)
             contador[df['SongID'][i]]['Pontos'] += (101 - df['Week Position'][i])
         else: #cai aqui se ainda nao foi computada
@@ -96,10 +96,10 @@ def adicionaAno(arquivo):
             contador[df['SongID'][i]]['Artista'] = df['Performer'][i]
             contador[df['SongID'][i]]['Titulo'] = df['Song'][i]
             contador[df['SongID'][i]]['Ano'] = ano
-            contador[df['SongID'][i]]['Pontos'] = (101 - df['Week Position'][i])
+            contador[df['SongID'][i]]['Pontos'] = int((101 - df['Week Position'][i]))
             #A medida 'Peak' nao eh a posicao exata que ela atingiu mas os "pontos maximos" ganhos em uma semana (de 1 a 100)
-            contador[df['SongID'][i]]['Peak'] = (101 - df['Peak Position'][i]) #salva qual foi a maior posicao alcançada pela musica (usada para criterios de desempate)
-            contador[df['SongID'][i]]['Semanas'] = df['Weeks on Chart'][i] #Terceiro criterio de desempate
+            contador[df['SongID'][i]]['Peak'] = int((101 - df['Peak Position'][i])) #salva qual foi a maior posicao alcançada pela musica (usada para criterios de desempate)
+            contador[df['SongID'][i]]['Semanas'] = int(df['Weeks on Chart'][i]) #Terceiro criterio de desempate
 
     #Faz o sort do ano atual
     items = sorted(contador.items(), key = lambda tup: (tup[1]["Pontos"], tup[1]["Peak"], tup[1]["Semanas"]), reverse=True)
@@ -197,6 +197,9 @@ def adicionaAno(arquivo):
     filename = "trieArtistas.bin"
     with (open(filename, 'wb+')) as openfile: #abre o arquivo de teste no modo de leitura binaria 'wb' como openfile
         pickle.dump(trieArtistas, openfile)
+
+	
+
 
 
 #aceita como entrada strings nos atributos de artista e titulos e ints nos de ano,pontos,peak e semanas

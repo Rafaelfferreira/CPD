@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['CPDgoesGraphical.py'],
-             pathex=['C:\\Users\\Pichau\\Desktop\\Programming\\CPD\\Trabalho'],
+             pathex=['C:\\Users\\Pichau\\Desktop\\CPD\\Trabalho'],
              binaries=[],
              datas=[],
              hiddenimports=[],
